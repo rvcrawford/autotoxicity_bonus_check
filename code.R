@@ -38,10 +38,33 @@ dat2 <- dat[tray=="weakest"|tray=="strongest",]
 model_check <- clm(score ~ entry + tray, data = dat2)
 summary(model_check)
 
+
+model_check_strongest <- clm(score ~ entry, data = dat2[tray=="strongest"])
+
+model_check_weakest <- clm(score ~ entry, data = dat2[tray=="weakest"])
+
+summary(model_check)
+
 library(emmeans)
 
 # Get estimated marginal means for all entries
 em <- emmeans(model_check, ~ entry)
+
+em_chck <- emmeans(model_check_strongest, ~entry)
+em_chck |> data.frame() |> 
+  ggplot() + 
+  aes(x = fct_reorder(entry, emmean, .desc = T), emmean) + 
+  geom_point() + 
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL))+
+  theme_bw()
+
+em_weakest <- emmeans(model_check_weakest, ~entry)
+em_weakest |> data.frame() |> 
+  ggplot() + 
+  aes(x = fct_reorder(entry, emmean, .desc = T), emmean) + 
+  geom_point() + 
+  geom_errorbar(aes(ymin = asymp.LCL, ymax = asymp.UCL))+
+  theme_bw()
 
 
 
